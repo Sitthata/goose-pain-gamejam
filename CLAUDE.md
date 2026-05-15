@@ -41,6 +41,13 @@ Stain % scales enemy: more filth = enemy dodges more, gains new movesets, become
   _dodge_direction = signf(global_position.x - origin.x)
   ```
 
+## Before Starting Any Task
+
+Read these files before any implementation or design work:
+- `planning/CONTEXT.md` — canonical domain glossary and game loop
+- `docs/adr/` — architectural decisions (especially ADR-0001 and ADR-0002)
+- Relevant spike doc in `docs/` (e.g. `STAIN_SPIKE.md` for stain work, `AI_SPIKE.md` for enemy AI work)
+
 ## Collaboration Model
 
 - **Claude's responsibility** — write GDScript scripts, provide implementation guidance, design system architecture
