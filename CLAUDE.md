@@ -110,6 +110,20 @@ scenes/
 **Could Have:** Reflective floor after clean, phase transition effect, cutscene
 **Won't Have:** Parry
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`Sitthata/goose-pain-gamejam`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default label vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo. Domain context lives at `planning/CONTEXT.md` (not repo root). See `docs/agents/domain.md`.
+
 ## Jam Link
 
 https://itch.io/jam/goedware-game-jam-boss-battle-edition

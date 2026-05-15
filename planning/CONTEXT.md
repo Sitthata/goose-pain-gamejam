@@ -1,97 +1,107 @@
-# GooseJanitor — Design Context
+# GooseJanitor
 
-Game jam: Goedware Game Jam - Boss Battle Edition
-Engine: Godot 4
-Inspiration: The Dark Queen of Mortholme (play as the boss)
+A Godot 4 boss battle game jam entry. You play as a goose janitor defending your room from bacteria. The room's cleanliness is the health system.
 
-## Core Concept
+## Language
 
-You are a goose. You are the janitor. You are the boss.
+**The Goose**:
+The player character. A powerful goose who is the boss of the room. Fights Bacteria and cleans Stains to defend the room.
+_Avoid_: goose janitor, goose boss, the player, protagonist
 
-Bacteria invade your room and spread stains. The dirtier the room, the stronger they become.
-Fight them. Clean the room. Don't let the filth win.
 
-## The Stain System
 
-The stain gauge is the single most important system in the game:
-- Bacteria movement spawns stains on the floor
-- Stain % directly scales enemy power (speed, dodge, moveset unlocks)
-- The stain gauge IS the health — no separate HP bar
-- Goal: reduce stain to 0%
+**Room**:
+The single arena where all gameplay takes place. The Goose defends it from Bacteria. Its cleanliness is tracked by the Filth Gauge.
+_Avoid_: level, stage, arena, map
 
-## Game Loop
+**Stain**:
+A static green puddle left on the floor or wall by bacteria. The physical object in the game world.
+_Avoid_: filth, dirt, puddle, pollution
 
-```
-[Defend Phase]
-  Player fights 1 bacteria enemy (always 1v1)
-        ↓ defeat enemy
-[Clean Phase]
-  Time window: 5–10 seconds (random)
-  Player presses button on stains to clean
-        ↓ if stain not 0%
-[Stronger bacteria respawns]
-  New enemy scene (higher tier), not same scene modified
-        ↓
-  repeat
-```
+**Filth Gauge**:
+The UI meter showing `active_stains / MAX_STAINS * 100`. Represents how dirty the room is. Drives enemy scaling.
+_Avoid_: stain gauge, health bar, dirt meter
 
-## Player Phases
+**Bacteria**:
+The enemy. A ground-dwelling microorganism that chases the player, attacks, and spawns Stains. Always fought 1v1. Has its own HP separate from the Filth Gauge.
+_Avoid_: enemy, monster, boss, bacterium
 
-Phase 1 — Janitor Mode
-- Horizontal movement, grounded
-- Fight and clean are separate actions
-- STATUS: EXPERIMENTAL — movement restrictions subject to change
+**Bacteria Tier**:
+An evolution of the Bacteria. Each tier is a separate Godot scene with higher stats and new moves. Spawns when the previous tier is defeated and the room is not fully clean. Prototype has 2 tiers; final game targets a maximum of 3.
+_Avoid_: evolution, form, stage, variant
 
-Phase 2 — Goose Boss Mode
-- Run, double jump, glide
-- Clean and attack simultaneously
-- Unlocked via progression (mechanism TBD)
+**Defend Phase**:
+The combat phase. The player fights one Bacteria while it spreads Stains. Ends when the Bacteria is defeated.
+_Avoid_: fight phase, battle phase, boss phase
 
-## Enemy Design
+**Clean Phase**:
+The time-limited window (5–10s, random) after a Bacteria is defeated. The Goose can clean Stains. Ends on timer expiry OR when Filth Gauge hits 0% (win condition). By design, the window is intentionally too short to fully clean the Room as Bacteria tiers escalate — the Filth Gauge trends upward over time.
+_Avoid_: cleaning mode, janitor phase, mop phase
 
-- 1v1 always — no multi-enemy spawns planned
-- Each evolution tier = separate Godot scene
-- AI must read stain % to adjust behavior:
-  - Low stain: basic movement + stain spreading
-  - Medium stain: adds dodging
-  - High stain: unlocks additional attack movesets
+**Janitor Mode**:
+The Goose's Phase 1 movement state. Grounded, horizontal movement only. Fight and clean are separate actions. Active until the Filth Gauge hits 100%.
+_Avoid_: Phase 1, restricted mode, walk mode
+_Status_: EXPERIMENTAL — restrictions subject to change after prototype testing
 
-## Open Questions
+**Goose Boss Mode**:
+The Goose's Phase 2 movement state. Unlocked permanently when the Filth Gauge hits 100%. Full movement: run, double jump, glide. Can clean and attack simultaneously. The Goose's true form. Cannot revert to Janitor Mode.
+_Avoid_: Phase 2, flight mode, boss mode
 
-- What triggers Phase 2 unlock?
-- How many enemy evolution tiers?
-- Explicit win condition (stain 0% triggers victory screen?)
-- Explicit lose condition (stain 100%? player gets knocked out?)
-- Weapons / combat moveset design
+**Boss Transformation**:
+The moment the Filth Gauge hits 100% and The Goose transitions from Janitor Mode to Goose Boss Mode. The designed climax of Phase 1 — not a failure state, but the intended path to victory.
+_Avoid_: phase transition, power-up, unlock
 
-## Feature Priority (from planning board)
+**Respawn Window**:
+A Goose Boss Mode-only mechanic. After The Goose defeats the Bacteria in Phase 2, the same Bacteria tier respawns at its death position after 5–6 seconds. The Goose must simultaneously fight and clean to reach 0% Filth Gauge before the Bacteria revives. Does not occur in Janitor Mode.
+_Avoid_: death timer, revival, grace period
 
-MUST HAVE:
-- Stain System (spawn stain, clean stain)
-- Player with 2 movesets
-- Player movement horizontal + vertical
-- Double jump / glide
-- 1 enemy per phase
-- Enemies death loop
-- Boss Stage
-- 4-5 sprites per enemy tier
-- Enemy AI behavior
+**Stain System**:
+The autoload singleton (`StainSystem.gd`) that tracks all active Stains, enforces the cap, and exposes the Filth Gauge value.
+_Avoid_: dirt system, filth system, cleaning system
 
-SHOULD HAVE:
-- UI filth gauge
-- Sound
-- Hit reaction
-- Screen shake
-- Dialog
-- VFX
-- Lighting
-- Sprite transition between phases
-- Parallax background
+**Clean Action**:
+The player input during Clean Phase: stand on a Stain → hold E → alternate A/D to fill the per-Stain gauge → Stain removed.
+_Avoid_: mop action, scrub, wipe
 
-COULD HAVE:
-- Reflective floor after clean
-- Phase transition effect
-- Cutscene
+## Relationships
 
-WON'T HAVE:
-- Parry
+- A **Stain** is spawned by a **Bacteria** (via projectile, vomit, or floor contact)
+- The **Filth Gauge** reads from the **Stain System**
+- The **Filth Gauge** value directly scales **Bacteria** strength (speed, dodge chance, moveset unlocks)
+**Phase 1 loop (Janitor Mode):**
+- A **Defend Phase** ends when the **Bacteria** is defeated
+- A **Clean Phase** follows every **Defend Phase**
+- A new, higher **Bacteria Tier** spawns after each **Clean Phase** if Filth Gauge > 0%
+
+**Phase 2 loop (Goose Boss Mode — triggered at 100% Filth Gauge):**
+- The Goose fights whichever **Bacteria Tier** was active at the moment of Boss Transformation — no tier jump occurs
+- The Goose fights the current **Bacteria** tier while simultaneously cleaning **Stains**
+- Defeating the **Bacteria** opens a **Respawn Window** (5–6s) — same tier respawns at death position
+- **Win condition**: defeat the Bacteria AND reach 0% Filth Gauge
+- **Lose condition**: none — the game cannot be lost, only won or abandoned
+- The **Clean Action** removes one **Stain** completely (no partial saves across phases)
+- **Filth Gauge = 100%** triggers the **Boss Transformation** — The Goose enters **Goose Boss Mode**
+- **Win condition**: defeat the Bacteria AND clean the Room to 0% Filth Gauge
+- **The game is designed so Phase 1 cannot sustain 0% filth** — Boss Transformation is inevitable
+
+## Example dialogue
+
+> **Dev:** "After the player defeats the Bacteria, does the Filth Gauge drop?"
+> **Domain expert:** "No — the Filth Gauge only drops when the player removes a Stain during the Clean Phase. Defeating the Bacteria just opens the Clean Phase window."
+
+> **Dev:** "Can the player clean Stains during the Defend Phase?"
+> **Domain expert:** "No — the Clean Action is only available during the Clean Phase."
+
+## Open questions
+
+- **Bacteria Tier escalation**: Threshold-based (Filth Gauge must exceed X% before next tier spawns). Thresholds TBD — design deferred post-prototype.
+
+
+- **Bacteria HP values**: Specific HP per tier. TBD — combat mechanics undesigned.
+- **Goose Boss Mode unlock**: Confirmed as Filth Gauge = 100%. Mechanism for returning to Janitor Mode (if ever) is TBD.
+- **Contact damage**: What happens when Bacteria touches The Goose. Currently no effect — TBD post-prototype.
+
+## Flagged ambiguities
+
+- "Stain gauge" and "Filth Gauge" were used interchangeably — resolved: **Stain** is the physical puddle, **Filth Gauge** is the UI meter. They are distinct concepts.
+- "Phase 1 / Phase 2" were used as names — resolved: canonical names are **Janitor Mode** and **Goose Boss Mode**.
