@@ -29,6 +29,18 @@ tracks/1/keys = {
 "update": 0,
 "values": [Vector2(-1, 2)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AgentAnimator/punch_hit/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_hss88"]
 resource_name = "fall"
@@ -135,6 +147,35 @@ tracks/1/keys = {
 "values": [1.5]
 }
 
+[sub_resource type="Animation" id="Animation_42irl"]
+resource_name = "punch"
+length = 1.2
+step = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AgentAnimator/Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 128, 64, 64), Rect2(64, 128, 64, 64), Rect2(128, 128, 64, 64), Rect2(192, 128, 64, 64), Rect2(256, 128, 64, 64), Rect2(320, 128, 64, 64), Rect2(384, 128, 64, 64)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AgentAnimator/punch_hit/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.6, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [true, false, true]
+}
+
 [sub_resource type="Animation" id="Animation_t61fv"]
 resource_name = "run"
 length = 1.4
@@ -178,9 +219,13 @@ _data = {
 &"idle": SubResource("Animation_qd3e3"),
 &"jump": SubResource("Animation_6avc5"),
 &"phase2_idle": SubResource("Animation_xuses"),
+&"punch": SubResource("Animation_42irl"),
 &"run": SubResource("Animation_t61fv"),
 &"walk": SubResource("Animation_mk55u")
 }
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3xnwo"]
+size = Vector2(23.533684, 21.802198)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_oq6u7"]
 radius = 8.0
@@ -209,6 +254,18 @@ scale = Vector2(1.390625, 1.421875)
 texture = ExtResource("2_t61fv")
 region_enabled = true
 region_rect = Rect2(64, 0, 64, 64)
+
+[node name="punch_hit" type="Area2D" parent="AgentAnimator" unique_id=1453383028]
+position = Vector2(-1.1920929e-07, -12.000001)
+scale = Vector2(1.3906251, 1.421875)
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AgentAnimator/punch_hit" unique_id=1171221441]
+position = Vector2(20.592712, 5.9780207)
+scale = Vector2(1.0000011, 1)
+shape = SubResource("RectangleShape2D_3xnwo")
+debug_color = Color(0.9173038, 0.1829795, 0.2240468, 0.41960785)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1779053473]
 position = Vector2(-1, 2)

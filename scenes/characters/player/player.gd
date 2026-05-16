@@ -10,18 +10,23 @@ enum Mode {
 
 enum State {
 	MOVE,
-	CLEANING
+	CLEANING,
+	ATTACKING
 }
 
 @export var normal_speed = 10.0
 @export var special_speed = 16.0
 @export var jump_power = 10.0
 
+@export_group("Combat")
+@export var punch_damage: int = 25
+
 @onready var animation_player: AnimationPlayer = $AgentAnimator/AnimationPlayer
 @onready var sprite: Sprite2D = $AgentAnimator/Sprite2D
 @onready var _clean_zone: Area2D = $CleanZone
 @onready var _clean_indicator: Label = $CleanIndicator
 @onready var _clean_progress_bar: ProgressBar = $CleanProgressBar
+@onready var punch_hit: Area2D = $AgentAnimator/punch_hit
 
 var current_mode: Mode = Mode.PHASE1
 var _state: State = State.MOVE
@@ -39,6 +44,9 @@ func _ready() -> void:
 	_clean_zone.area_entered.connect(_on_stain_entered)
 	_clean_zone.area_exited.connect(_on_stain_exited)
 	
+	punch_hit.body_entered.connect(_on_punch_hit_body_entered)
+	animation_player.animation_finished.connect(_on_animation_finished)
+	
 	_clean_indicator.visible = false
 	_clean_progress_bar.visible = false
 
@@ -52,6 +60,8 @@ func _physics_process(delta: float) -> void:
 			_state_move(delta)
 		State.CLEANING:
 			_state_cleaning(delta)
+		State.ATTACKING:
+			_state_attacking(delta)
 
 	move_and_slide()
 
@@ -60,8 +70,13 @@ func _state_move(delta: float) -> void:
 	handle_mode_switch()
 	handle_jump()
 	handle_horizontal_movement()
-	update_animation()
 
+	if Input.is_action_just_pressed("attack"):
+		_start_attack()
+		return
+		
+	update_animation()
+	
 	if not _nearby_stains.is_empty() and Input.is_action_just_pressed("clean"):
 		_start_cleaning()
 
@@ -218,3 +233,22 @@ func _on_stain_exited(area: Area2D) -> void:
 
 		if _nearby_stains.is_empty():
 			_clean_indicator.visible = false
+
+func _start_attack() -> void:
+	_state = State.ATTACKING
+	velocity.x = 0
+	animation_player.play("punch")
+	
+func _state_attacking(_delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0, normal_speed * speed_multiplier)
+	
+func _on_animation_finished(anim_name: StringName) -> void:
+	if _state == State.ATTACKING and anim_name == "punch":
+		_state = State.MOVE
+		
+func _on_punch_hit_body_entered(body: Node2D) -> void:
+	if _state != State.ATTACKING:
+		return
+	
+	if body.has_method("take_damage"):
+		body.take_damage(punch_damage)

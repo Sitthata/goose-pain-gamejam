@@ -20,6 +20,10 @@ var previous_state: State = State.IDLE
 @export var detection_range: float = 400.0
 @export var attack_range: float = 150.0
 
+@export_group("Health")
+@export var max_health: int = 100
+var current_health: int
+
 @export_group("Combat")
 @export var projectile_rate: float = 3.0   # seconds between shots
 @export var spit_speed: float = 200.0
@@ -43,6 +47,7 @@ var _attack_pause: float = 0.0
 #endregion
 
 func _ready() -> void:
+	current_health = max_health
 	player = get_tree().get_first_node_in_group("player")
 	set_state(State.IDLE)
 
@@ -156,6 +161,15 @@ func _fire_spit() -> void:
 	direction = direction.normalized()
 	spit.launch(direction, spit_speed)
 
+func take_damage(damage: int) -> void:
+	if state == State.DEAD:
+		return
+	
+	current_health -= damage
+	print("Bacteria HP: ", current_health)
+	
+	if current_health <= 0:
+		set_state(State.DEAD)
 
 func _on_death() -> void:
 	# TODO: play Explode animation here before queue_free when art is ready
