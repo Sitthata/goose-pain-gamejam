@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://deqsxy136ixkd"
-path="res://.godot/imported/Water Effect and Bullet 16x16.png-0b5a8feeb66b0b789b0354f9e1197c07.ctex"
+uid="uid://cmybw7ofan8wp"
+path="res://.godot/imported/SmokeFX Lite SpriteSheet 1A-13.png-7d38b57d1363ab61ebc1cdf82c6f7be7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/effect/Water Effect and Bullet 16x16.png"
-dest_files=["res://.godot/imported/Water Effect and Bullet 16x16.png-0b5a8feeb66b0b789b0354f9e1197c07.ctex"]
+source_file="res://assets/effect/smokes/SmokeFX Lite SpriteSheet 1A-13.png"
+dest_files=["res://.godot/imported/SmokeFX Lite SpriteSheet 1A-13.png-7d38b57d1363ab61ebc1cdf82c6f7be7.ctex"]
 
 [params]
 
