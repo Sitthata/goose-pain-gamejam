@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dc0055ek1ovup" path="res://assets/tilemap/other_and_decorative.png" id="3_ef5al"]
 [ext_resource type="Script" uid="uid://dc11twtkfxd47" path="res://scenes/systems/spit_spawner/spit_spawner.gd" id="4_7k5n6"]
 [ext_resource type="Script" uid="uid://dchqkwuyie5ks" path="res://scenes/ui/filth_gauge/filth_gauge.gd" id="5_7k5n6"]
+[ext_resource type="PackedScene" uid="uid://b04rchvhedr7m" path="res://scenes/systems/player.tscn" id="6_ef5al"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y7mc7"]
 resource_name = "main"
@@ -2409,3 +2410,6 @@ theme_override_font_sizes/font_size = 32
 text = "100"
 horizontal_alignment = 1
 script = ExtResource("5_7k5n6")
+
+[node name="Player" parent="." unique_id=489665766 instance=ExtResource("6_ef5al")]
+position = Vector2(364, 462)
