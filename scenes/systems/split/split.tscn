@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dsqxi4g103lpi"]
+
+[ext_resource type="Script" uid="uid://bdie8r6lrwrmp" path="res://scenes/systems/split/spit.gd" id="1_eqnqb"]
+[ext_resource type="Texture2D" uid="uid://jol8hdu1x6nb" path="res://assets/effect/Green Effect and Bullet 16x16.png" id="1_s1bro"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1bro"]
+atlas = ExtResource("1_s1bro")
+region = Rect2(128, 32, 16, 16)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_eqnqb"]
+radius = 2.0
+height = 6.0
+
+[node name="Split" type="CharacterBody2D" unique_id=207488774]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_eqnqb")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=875228444]
+texture_filter = 1
+texture = SubResource("AtlasTexture_s1bro")
+offset = Vector2(-5, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1943598254]
+texture_filter = 1
+rotation = -1.5707964
+shape = SubResource("CapsuleShape2D_eqnqb")

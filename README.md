@@ -84,16 +84,20 @@ scenes/                   # Godot scenes — scene + script live together
     bacteria_base.gd
     bacteria_tier2.tscn
     bacteria_tier2.gd
-  levels/                 # Room/stage scenes
-  ui/                     # UI scenes (HUD, filth gauge)
+  stages/                 # Room/stage scenes (boss_stage.tscn + boss_stage.gd)
+  systems/                # Game systems (each in its own subfolder)
+    stain/                # stain.tscn + stain.gd
+    split/                # split.tscn + spit.gd  (spit projectile)
+    spit_spawner/         # spit_spawner.gd (+ future .tscn)
+  ui/                     # UI scenes
+    filth_gauge/          # filth_gauge.gd (+ future .tscn)
 
 resources/                # Godot .tres / .res resource files
   tilemap/                # TileSet resources
   themes/                 # UI themes
 
-scripts/                  # Standalone scripts with no paired scene
-  autoload/               # Singletons (StainSystem, GameLoop, etc.)
-  utils/                  # Shared helper scripts
+scripts/                  # Autoload singletons only
+  autoload/               # Singletons registered in Project Settings → Autoload
 
 planning/                 # Design docs and context
 
@@ -104,8 +108,8 @@ docs/                     # Technical spike documents
 
 ### Conventions
 
-- **Scene + script together** — `player.tscn` and `player.gd` live in the same folder under `scenes/`
-- **Autoloads for shared systems** — `StainSystem` and `GameLoop` go in `scripts/autoload/` and are registered in Project Settings → Autoload
+- **Scene + script together** — `.tscn` and `.gd` live in the same subfolder under `scenes/`; one subfolder per scene
+- **`scripts/` is autoloads only** — `StainSystem`, `GameLoop`, etc. go in `scripts/autoload/` and are registered in Project Settings → Autoload; nothing else goes in `scripts/`
 - **One folder per enemy tier** — each bacteria evolution is its own subfolder under `scenes/boss/`
 - **`assets/` is art-in, `resources/` is Godot-out** — raw sprites go in `assets/`, generated `.tres` files go in `resources/`
 

@@ -74,10 +74,18 @@ planning/
   CONTEXT.md          # Game design notes
 resources/
   tilemap/            # Godot tilemap resources (.tres)
-scenes/
+scenes/               # All scenes + scripts co-located (one subfolder per scene)
   boss/               # Bacteria boss scenes (one per evolution tier)
-  levels/             # Level/room scenes
+  stages/             # Room/stage scenes (boss_stage.tscn + boss_stage.gd)
   player/             # Player scene(s)
+  systems/            # Game system scenes
+    stain/            # stain.tscn + stain.gd
+    split/            # split.tscn + spit.gd (spit projectile)
+    spit_spawner/     # spit_spawner.gd (+ future .tscn)
+  ui/                 # UI scenes
+    filth_gauge/      # filth_gauge.gd (+ future .tscn)
+scripts/              # Autoload singletons ONLY
+  autoload/           # Registered in Project Settings → Autoload (e.g. StainSystem)
 ```
 
 ## What Is Decided vs. Experimental

@@ -26,6 +26,10 @@ _Avoid_: stain gauge, health bar, dirt meter
 The enemy. A ground-dwelling microorganism that chases the player, attacks, and spawns Stains. Always fought 1v1. Has its own HP separate from the Filth Gauge.
 _Avoid_: enemy, monster, boss, bacterium
 
+**Spit**:
+A projectile fired by the Bacteria. Travels in an arc (affected by gravity) and spawns a Stain on impact with a stainable surface. Distinct from Vomit, which is a separate attack.
+_Avoid_: projectile, glob, ball, bullet
+
 **Bacteria Tier**:
 An evolution of the Bacteria. Each tier is a separate Godot scene with higher stats and new moves. Spawns when the previous tier is defeated and the room is not fully clean. Prototype has 2 tiers; final game targets a maximum of 3.
 _Avoid_: evolution, form, stage, variant
