@@ -1043,6 +1043,11 @@ animations = [{
 "name": &"idle",
 "speed": 5.0
 }, {
+"frames": [],
+"loop": true,
+"name": &"test",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 0.3,
 "texture": ExtResource("252_3ayot")
@@ -1158,7 +1163,8 @@ height = 62.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_uar8r"]
 radius = 30.870699
 
-[node name="Player" type="CharacterBody2D" unique_id=866851592]
+[node name="Player" type="CharacterBody2D" unique_id=866851592 groups=["player"]]
+collision_mask = 0
 script = ExtResource("1_plhy4")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=633238545]
@@ -1166,9 +1172,7 @@ zoom = Vector2(2, 2)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=515930358]
 sprite_frames = SubResource("SpriteFrames_kws0b")
-animation = &"walk"
-frame = 9
-frame_progress = 0.17223339
+animation = &"test"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1779053473]
 position = Vector2(2, 2)

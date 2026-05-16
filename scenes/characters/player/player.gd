@@ -51,6 +51,10 @@ func _state_move(delta: float) -> void:
 			_state = State.CLEANING
 
 func _state_cleaning(_delta: float) -> void:
+	if not is_instance_valid(_target_stain):
+		_cancel_clean()
+		return
+
 	if not Input.is_action_pressed("clean"):
 		_cancel_clean()
 		return

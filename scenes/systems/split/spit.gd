@@ -4,6 +4,10 @@ const GRAVITY := 500.0
 const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 const SPLASH_SCENE = preload("res://scenes/systems/splash/splash.tscn")
 
+func launch(direction: Vector2, speed: float) -> void:
+	velocity = direction * speed
+
+
 func _physics_process(delta: float) -> void:
 	velocity.y += GRAVITY * delta
 	rotation = velocity.angle()

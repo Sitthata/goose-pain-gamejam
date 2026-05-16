@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://rf27h3ugnhyk"]
+
+[ext_resource type="Script" uid="uid://dp3fx18ysg2d6" path="res://scenes/boss/bacteria_tier1.gd" id="1_eiyl8"]
+[ext_resource type="Texture2D" uid="uid://c4oa7iqgbxd6a" path="res://assets/dummy/Dummy2D Sprite Sheet.png" id="1_h2cv8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eiyl8"]
+atlas = ExtResource("1_h2cv8")
+region = Rect2(23, 18, 15, 46)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7t32j"]
+radius = 6.0
+height = 42.0
+
+[node name="BacteriaTier1" type="CharacterBody2D" unique_id=1985986814]
+collision_layer = 8
+script = ExtResource("1_eiyl8")
+spit_speed = 250.0
+spit_arc = 0.3
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=722583175]
+texture = SubResource("AtlasTexture_eiyl8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=472176153]
+shape = SubResource("CapsuleShape2D_7t32j")
+
+[node name="DebugLabel" type="Label" parent="." unique_id=1821923780]
+offset_left = -20.0
+offset_top = -48.0
+offset_right = 20.0
+offset_bottom = -25.0
+text = "test"
+horizontal_alignment = 1
