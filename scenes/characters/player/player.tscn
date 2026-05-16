@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://drrbjq1vhlhxf"]
+[gd_scene format=3 uid="uid://csk5fby83h412"]
 
-[ext_resource type="Script" uid="uid://0tohlbujiuo4" path="res://scenes/systems/player.gd" id="1_plhy4"]
+[ext_resource type="Script" uid="uid://0tohlbujiuo4" path="res://scenes/characters/player/player.gd" id="1_plhy4"]
 [ext_resource type="Texture2D" uid="uid://dl3gftqx0qc34" path="res://assets/Test player sprite/Idle/0001.png" id="2_kws0b"]
 [ext_resource type="Texture2D" uid="uid://bqv1ecly3ws7j" path="res://assets/Test player sprite/Idle/0002.png" id="3_oq6u7"]
 [ext_resource type="Texture2D" uid="uid://cufvfcftvy5r0" path="res://assets/Test player sprite/Idle/0003.png" id="4_v5d7o"]
@@ -1155,11 +1155,14 @@ animations = [{
 radius = 8.0
 height = 62.0
 
-[node name="CharacterBody2D" type="CharacterBody2D" unique_id=866851592]
+[sub_resource type="CircleShape2D" id="CircleShape2D_uar8r"]
+radius = 30.870699
+
+[node name="Player" type="CharacterBody2D" unique_id=866851592]
 script = ExtResource("1_plhy4")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=633238545]
-zoom = Vector2(5, 5)
+zoom = Vector2(2, 2)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=515930358]
 sprite_frames = SubResource("SpriteFrames_kws0b")
@@ -1170,3 +1173,29 @@ frame_progress = 0.17223339
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1779053473]
 position = Vector2(2, 2)
 shape = SubResource("CapsuleShape2D_oq6u7")
+
+[node name="CleanIndicator" type="Label" parent="." unique_id=160244574 groups=["player"]]
+visible = false
+offset_left = -20.0
+offset_top = -57.0
+offset_right = 20.0
+offset_bottom = -34.0
+text = "E"
+horizontal_alignment = 1
+
+[node name="CleanProgressBar" type="ProgressBar" parent="." unique_id=238904463]
+visible = false
+offset_left = -19.0
+offset_top = -46.0
+offset_right = 21.0
+offset_bottom = -41.0
+max_value = 1.0
+show_percentage = false
+
+[node name="CleanZone" type="Area2D" parent="." unique_id=1749819682]
+position = Vector2(3, 20)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CleanZone" unique_id=1328559240]
+shape = SubResource("CircleShape2D_uar8r")

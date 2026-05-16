@@ -4,6 +4,7 @@ extends Area2D
 var cleaning_progress: float = 0.0
 
 func _ready() -> void:
+	add_to_group("stain")
 	StainSystem.register_stain(self)
 
 func advance_clean(amount: float) -> void:

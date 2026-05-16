@@ -7,12 +7,11 @@
 atlas = ExtResource("2_o0tff")
 region = Rect2(400, 448, 32, 24)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_lhq5b"]
-radius = 16.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o0tff"]
+size = Vector2(27, 5)
 
-[node name="Stain" type="Area2D" unique_id=643825386]
-collision_layer = 0
-collision_mask = 0
+[node name="Stain" type="Area2D" unique_id=643825386 groups=["stain"]]
+collision_layer = 2
 script = ExtResource("1_pyhb4")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1551196209]
@@ -21,4 +20,5 @@ position = Vector2(0, 12)
 texture = SubResource("AtlasTexture_qg718")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1211426464]
-shape = SubResource("CircleShape2D_lhq5b")
+position = Vector2(-0.5, 2.5)
+shape = SubResource("RectangleShape2D_o0tff")
