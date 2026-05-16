@@ -65,7 +65,8 @@ func _state_cleaning(_delta: float) -> void:
 		_last_clean_key = "right"
 		_target_stain.advance_clean(CLEAN_AMOUNT)
 
-	_clean_progress_bar.value = _target_stain.cleaning_progress
+	if is_instance_valid(_target_stain):
+		_clean_progress_bar.value = _target_stain.cleaning_progress
 
 func Handle_jump(_delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
