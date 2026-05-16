@@ -5,6 +5,8 @@ extends CharacterBody2D
 ## Chases player, spits projectile periodically, bursts into spit on death.
 ## Exported stats are tuned in the Inspector — no hardcoded values in logic.
 
+signal defeated
+
 const SPIT_SCENE = preload("res://scenes/systems/split/split.tscn")
 
 #region State Machine
@@ -180,6 +182,7 @@ func _on_death() -> void:
 		# Random angle in the upward hemisphere (negative Y = up in Godot 2D)
 		var angle := randf_range(-PI, 0.0)
 		spit.launch(Vector2(cos(angle), sin(angle)), spit_speed)
+	defeated.emit()
 	queue_free()
 #endregion
 
@@ -187,4 +190,12 @@ func _on_death() -> void:
 #region Helpers
 func _dist_to_player() -> float:
 	return global_position.distance_to(player.global_position)
+
+
+## Scales exported stats by tier number. Called by boss_stage after instantiation.
+## Prototype shortcut — production should use separate scenes per tier with Inspector-tuned values.
+func apply_tier(tier: int) -> void:
+	move_speed       = move_speed * pow(1.2, tier - 1)
+	projectile_rate  = maxf(projectile_rate * pow(0.85, tier - 1), 0.8)
+	death_spit_count = death_spit_count + (tier - 1)
 #endregion

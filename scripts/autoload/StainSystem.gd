@@ -1,6 +1,6 @@
 extends Node
 
-const MAX_STAINS: int = 10
+const MAX_STAINS: int = 30
 
 var active_stains: Array = []
 
