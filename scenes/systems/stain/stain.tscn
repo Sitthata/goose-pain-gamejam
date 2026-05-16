@@ -1,7 +1,11 @@
 [gd_scene format=3 uid="uid://pnri30neogha"]
 
-[ext_resource type="Texture2D" uid="uid://bfprkx7ry6i2" path="res://icon.svg" id="1_lhq5b"]
 [ext_resource type="Script" uid="uid://cho0qavw1ku26" path="res://scenes/systems/stain/stain.gd" id="1_pyhb4"]
+[ext_resource type="Texture2D" uid="uid://dc0055ek1ovup" path="res://assets/tilemap/other_and_decorative.png" id="2_o0tff"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qg718"]
+atlas = ExtResource("2_o0tff")
+region = Rect2(400, 448, 32, 24)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lhq5b"]
 radius = 16.0
@@ -12,9 +16,9 @@ collision_mask = 0
 script = ExtResource("1_pyhb4")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1551196209]
-position = Vector2(0, 8)
-scale = Vector2(0.12, 0.12)
-texture = ExtResource("1_lhq5b")
+texture_filter = 1
+position = Vector2(0, 12)
+texture = SubResource("AtlasTexture_qg718")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1211426464]
 shape = SubResource("CircleShape2D_lhq5b")

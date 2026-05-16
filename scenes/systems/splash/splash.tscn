@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://dnk8jgtqbh4db"]
+
+[ext_resource type="Script" uid="uid://cqrk6jbaw3yww" path="res://scenes/systems/splash/splash.gd" id="1_bfjsg"]
+[ext_resource type="Texture2D" uid="uid://csjea7ikiq4o" path="res://assets/effect/smokes/SmokeFX Lite SpriteSheet 3A-5.png" id="2_kwgr0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8gubr"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4f6kc"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tiwiq"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2cmne"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pu1by"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l6n15"]
+atlas = ExtResource("2_kwgr0")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_w6f0j"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8gubr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4f6kc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tiwiq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2cmne")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pu1by")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l6n15")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="Splash" type="Node2D" unique_id=987538867]
+z_index = 1
+script = ExtResource("1_bfjsg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1675293407]
+modulate = Color(0.3019608, 1, 0.3019608, 0.8784314)
+texture_filter = 1
+position = Vector2(-2.3841858e-07, -4.7683716e-07)
+scale = Vector2(0.8, 0.8)
+sprite_frames = SubResource("SpriteFrames_w6f0j")
+frame_progress = 1.0
+offset = Vector2(-5, -8)

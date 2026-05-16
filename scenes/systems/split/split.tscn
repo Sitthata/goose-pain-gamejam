@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dsqxi4g103lpi"]
 
 [ext_resource type="Script" uid="uid://bdie8r6lrwrmp" path="res://scenes/systems/split/spit.gd" id="1_eqnqb"]
-[ext_resource type="Texture2D" uid="uid://jol8hdu1x6nb" path="res://assets/effect/Green Effect and Bullet 16x16.png" id="1_s1bro"]
+[ext_resource type="Texture2D" uid="uid://jol8hdu1x6nb" path="res://assets/effect/particles/Green Effect and Bullet 16x16.png" id="1_s1bro"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_s1bro"]
 atlas = ExtResource("1_s1bro")

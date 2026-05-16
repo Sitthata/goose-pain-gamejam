@@ -2411,5 +2411,6 @@ text = "100"
 horizontal_alignment = 1
 script = ExtResource("5_7k5n6")
 
-[node name="Player" parent="." unique_id=489665766 instance=ExtResource("6_ef5al")]
-position = Vector2(364, 462)
+[node name="Camera2D" type="Camera2D" parent="." unique_id=864485086]
+position = Vector2(360, 396)
+zoom = Vector2(2, 2)
