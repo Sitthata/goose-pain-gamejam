@@ -14,12 +14,12 @@ const TIER_STATS := {
 }
 
 func _filth_to_tier(filth: float) -> int:
-	if filth < 20.0: return 1
-	if filth < 30.0: return 2
+	if filth < 10.0: return 1
+	if filth < 25.0: return 2
 	return 3
 
 const CLEAN_PHASE_MIN := 5.0
-const CLEAN_PHASE_MAX := 10.0
+const CLEAN_PHASE_MAX := 8.0
 
 var current_phase: Phase = Phase.DEFEND
 var _clean_timer: float = 0.0
@@ -72,4 +72,6 @@ func _end_clean_phase() -> void:
 		_start_defend_phase()
 
 func _win() -> void:
-	pass  # TODO: win condition
+	current_phase = Phase.DEFEND  # stop the clean timer loop
+	_clean_time_label.hide()
+	# TODO: win condition (show win screen, etc.)
