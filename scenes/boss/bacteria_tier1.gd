@@ -183,12 +183,14 @@ func _update_chase() -> void:
 		set_state(State.IDLE)
 		return
 
-	if lunge_enabled and _lunge_timer <= 0.0 and _raycast_clear():
-		set_state(State.LUNGE)
-		return
-
+	# Attack fires first when in range and ready
 	if dist <= attack_range and _attack_cooldown <= 0.0:
 		set_state(State.ATTACK)
+		return
+
+	# Lunge when ready and raycast clear
+	if lunge_enabled and _lunge_timer <= 0.0 and _raycast_clear():
+		set_state(State.LUNGE)
 		return
 
 	# Move toward player, stop when within attack range

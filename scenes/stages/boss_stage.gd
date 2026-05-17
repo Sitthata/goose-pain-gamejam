@@ -1,6 +1,7 @@
 extends Node2D
 
 const BACTERIA_SCENE = preload("res://scenes/boss/BacteriaTier1.tscn")
+@onready var tier_label: Label = $CanvasLayer/BacteriaTier
 
 enum Phase { DEFEND, CLEAN }
 
@@ -51,7 +52,11 @@ func _start_defend_phase() -> void:
 	var tier := _filth_to_tier(StainSystem.get_filth_percent())
 	bacteria.apply_stats(TIER_STATS[tier])
 	add_child(bacteria)
+	bacteria.global_position = $BacteriaSpawnPosition.position
 	bacteria.defeated.connect(on_bacteria_defeated)
+	
+	# Debug
+	tier_label.text = str("Tier: ", tier)
 
 func _start_clean_phase() -> void:
 	current_phase = Phase.CLEAN
