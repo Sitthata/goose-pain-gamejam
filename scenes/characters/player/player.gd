@@ -49,6 +49,7 @@ func _ready() -> void:
 	
 	_clean_indicator.visible = false
 	_clean_progress_bar.visible = false
+	set_cleaning_enabled(false)
 
 
 func _physics_process(delta: float) -> void:
@@ -214,6 +215,20 @@ func _finish_clean() -> void:
 
 	if not _nearby_stains.is_empty():
 		_clean_indicator.visible = true
+
+
+func set_cleaning_enabled(enabled: bool) -> void:
+	if not enabled and _state == State.CLEANING:
+		_cancel_clean()
+	_nearby_stains.clear()
+	_clean_indicator.visible = false
+	_clean_zone.monitoring = enabled
+	if enabled:
+		for area in _clean_zone.get_overlapping_areas():
+			if area.is_in_group("stain"):
+				_nearby_stains.append(area)
+		if not _nearby_stains.is_empty():
+			_clean_indicator.visible = true
 
 
 func _on_stain_entered(area: Area2D) -> void:

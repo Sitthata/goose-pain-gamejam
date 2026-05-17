@@ -15,6 +15,7 @@ var _current_tier: int = 1
 @export var bacteria_spawn_position: Vector2 = Vector2(300, -50)
 
 @onready var _clean_time_label: Label = $CanvasLayer/CleanTime
+@onready var _player = get_tree().get_first_node_in_group("player")
 
 func _ready() -> void:
 	_start_defend_phase()
@@ -33,6 +34,7 @@ func on_bacteria_defeated() -> void:
 func _start_defend_phase() -> void:
 	current_phase = Phase.DEFEND
 	_clean_time_label.hide()
+	_player.set_cleaning_enabled(false)
 	var bacteria := BACTERIA_SCENE.instantiate() as BacteriaTier1
 	bacteria.global_position = bacteria_spawn_position
 	bacteria.apply_tier(_current_tier)
@@ -43,6 +45,7 @@ func _start_clean_phase() -> void:
 	current_phase = Phase.CLEAN
 	_clean_timer = randf_range(CLEAN_PHASE_MIN, CLEAN_PHASE_MAX)
 	_clean_time_label.show()
+	_player.set_cleaning_enabled(true)
 	# TODO: notify player Clean Phase has started (UI pulse, audio cue, etc.)
 
 func _end_clean_phase() -> void:
