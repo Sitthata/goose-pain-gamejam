@@ -8,7 +8,6 @@ extends CharacterBody2D
 signal defeated
 
 const SPIT_SCENE = preload("res://scenes/systems/split/split.tscn")
-const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 
 #region State Machine
 enum State { IDLE, CHASE, ATTACK, DEAD, LUNGE, DODGE }
@@ -99,6 +98,8 @@ func _physics_process(delta: float) -> void:
 
 	velocity.y += get_gravity().y * delta
 
+	set_state(_desired_state())
+
 	match state:
 		State.IDLE:
 			_update_idle()
@@ -112,6 +113,23 @@ func _physics_process(delta: float) -> void:
 			_update_dodge(delta)
 
 	move_and_slide()
+
+
+## Returns the state the FSM wants to be in. Priority is explicit top-to-bottom.
+## Locked states (DEAD, LUNGE, DODGE, ATTACK) handle their own exits — don't interrupt.
+func _desired_state() -> State:
+	if state in [State.DEAD, State.LUNGE, State.DODGE, State.ATTACK]:
+		return state
+	if not is_instance_valid(player):
+		return State.IDLE
+	var dist := _dist_to_player()
+	if dist > detection_range:
+		return State.IDLE
+	if dist <= attack_range and _attack_cooldown <= 0.0:
+		return State.ATTACK
+	if lunge_enabled and _lunge_timer <= 0.0 and _raycast_clear():
+		return State.LUNGE
+	return State.CHASE
 
 
 # Placeholder kill key — remove once real hit detection is wired
@@ -172,27 +190,10 @@ func _exit_state(old_state: State) -> void:
 #region State Updates
 func _update_idle() -> void:
 	velocity.x = 0
-	if _dist_to_player() <= detection_range:
-		set_state(State.CHASE)
 
 
 func _update_chase() -> void:
 	var dist := _dist_to_player()
-
-	if dist > detection_range:
-		set_state(State.IDLE)
-		return
-
-	# Attack fires first when in range and ready
-	if dist <= attack_range and _attack_cooldown <= 0.0:
-		set_state(State.ATTACK)
-		return
-
-	# Lunge when ready and raycast clear
-	if lunge_enabled and _lunge_timer <= 0.0 and _raycast_clear():
-		set_state(State.LUNGE)
-		return
-
 	# Move toward player, stop when within attack range
 	if dist > attack_range:
 		var dir := signf(player.global_position.x - global_position.x)
@@ -292,10 +293,7 @@ func _try_spawn_trail_stain() -> void:
 	if result.is_empty():
 		return
 	var floor_pos: Vector2 = result.position
-	if StainSystem.can_spawn_stain(floor_pos):
-		var stain := STAIN_SCENE.instantiate()
-		stain.global_position = floor_pos
-		get_tree().current_scene.add_child(stain)
+	StainSystem.spawn_stain(floor_pos, Vector2.UP)
 
 
 func _get_dodge_chance() -> float:
@@ -310,8 +308,7 @@ func _on_attack_telegraphed(origin: Vector2) -> void:
 		set_state(State.DODGE)
 
 
-## Applies a stat config dict from boss_stage. Keys must match exported stat names.
-func apply_stats(s: Dictionary) -> void:
+func apply_stats(s: BacteriaStats) -> void:
 	lunge_enabled     = s.lunge
 	projectile_rate   = s.spit_cd
 	death_spit_count  = s.death_spits
@@ -320,7 +317,7 @@ func apply_stats(s: Dictionary) -> void:
 	lunge_stain_count = s.lunge_stains
 	dodge_chance_base = s.dodge
 	print("[Bacteria] tier=%d lunge=%s spit_cd=%.1f death_spits=%d lunge_cd=%.1f lunge_dur=%.1f lunge_stains=%d dodge=%.2f" % [
-		s.get("tier", 0), lunge_enabled, projectile_rate, death_spit_count,
+		s.tier, lunge_enabled, projectile_rate, death_spit_count,
 		lunge_cooldown, lunge_duration, lunge_stain_count, dodge_chance_base
 	])
 #endregion

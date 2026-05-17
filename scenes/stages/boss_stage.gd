@@ -7,16 +7,11 @@ enum Phase { DEFEND, CLEAN }
 
 # Difficulty tiers keyed by tier number.
 # To add a new moveset: add one key to each dict here.
-const TIER_STATS := {
-	1: {tier=1, lunge=false, spit_cd=5.0, death_spits=2, lunge_cd=8.0, lunge_dur=0.2, lunge_stains=2, dodge=0.0},
-	2: {tier=2, lunge=true,  spit_cd=3.0, death_spits=3, lunge_cd=6.0, lunge_dur=0.3, lunge_stains=3, dodge=0.3},
-	3: {tier=3, lunge=true,  spit_cd=3.0, death_spits=4, lunge_cd=5.0, lunge_dur=0.4, lunge_stains=3, dodge=0.5},
-}
-
-func _filth_to_tier(filth: float) -> int:
-	if filth < 10.0: return 1
-	if filth < 25.0: return 2
-	return 3
+# tier, lunge, spit_cd, death_spits, lunge_cd, lunge_dur, lunge_stains, dodge
+func _stats_for_filth(filth: float) -> BacteriaStats:
+	if filth < 10.0: return BacteriaStats.new(1, false, 5.0, 2, 8.0, 0.2, 2, 0.0)
+	if filth < 25.0: return BacteriaStats.new(2, true,  3.0, 3, 6.0, 0.3, 3, 0.3)
+	return             BacteriaStats.new(3, true,  3.0, 4, 5.0, 0.4, 3, 0.5)
 
 const CLEAN_PHASE_MIN := 5.0
 const CLEAN_PHASE_MAX := 8.0
@@ -50,14 +45,14 @@ func _start_defend_phase() -> void:
 	_player.set_cleaning_enabled(false)
 	var bacteria := BACTERIA_SCENE.instantiate() as BacteriaTier1
 	bacteria.global_position = bacteria_spawn_position
-	var tier := _filth_to_tier(StainSystem.get_filth_percent())
-	bacteria.apply_stats(TIER_STATS[tier])
+	var stats := _stats_for_filth(StainSystem.get_filth_percent())
+	bacteria.apply_stats(stats)
 	add_child(bacteria)
 	bacteria.global_position = $BacteriaSpawnPosition.position
 	bacteria.defeated.connect(on_bacteria_defeated)
-	
+
 	# Debug
-	tier_label.text = str("Tier: ", tier)
+	tier_label.text = str("Tier: ", stats.tier)
 
 func _start_clean_phase() -> void:
 	current_phase = Phase.CLEAN

@@ -1,7 +1,6 @@
 extends CharacterBody2D
 
 const GRAVITY := 500.0
-const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 const SPLASH_SCENE = preload("res://scenes/systems/splash/splash.tscn")
 
 func launch(direction: Vector2, speed: float) -> void:
@@ -21,8 +20,4 @@ func _on_impact(impact_pos: Vector2, surface_normal: Vector2) -> void:
 	splash.global_position = impact_pos
 	get_tree().current_scene.add_child(splash)
 
-	if StainSystem.can_spawn_stain(impact_pos, surface_normal):
-		var stain := STAIN_SCENE.instantiate()
-		stain.global_position = impact_pos
-		stain.rotation = surface_normal.angle() + PI / 2
-		get_tree().current_scene.add_child(stain)
+	StainSystem.spawn_stain(impact_pos, surface_normal)

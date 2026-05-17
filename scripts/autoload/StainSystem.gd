@@ -1,6 +1,7 @@
 extends Node
 
 const MAX_STAINS: int = 20
+const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 
 var active_stains: Array = []
 var _tilemap: TileMapLayer = null
@@ -28,6 +29,17 @@ func _is_stainable_at(global_pos: Vector2) -> bool:
 	var coords := _tilemap.local_to_map(_tilemap.to_local(global_pos))
 	var td := _tilemap.get_cell_tile_data(coords)
 	return td != null and td.get_custom_data("stainable")
+
+## Spawn a stain at world position, rotated to lie flat on the given surface normal.
+## Returns the spawned stain node, or null if spawn was blocked.
+func spawn_stain(position: Vector2, surface_normal: Vector2 = Vector2.UP) -> Node:
+	if not can_spawn_stain(position, surface_normal):
+		return null
+	var stain := STAIN_SCENE.instantiate()
+	stain.global_position = position
+	stain.rotation = surface_normal.angle() + PI / 2
+	get_tree().current_scene.add_child(stain)
+	return stain
 
 func register_stain(stain: Node) -> void:
 	active_stains.append(stain)
