@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal attack_telegraphed(origin: Vector2)
+
 const CLEAN_PRESSES: int = 10
 const CLEAN_AMOUNT: float = 1.0 / CLEAN_PRESSES
 
@@ -253,6 +255,7 @@ func _start_attack() -> void:
 	_state = State.ATTACKING
 	velocity.x = 0
 	animation_player.play("punch")
+	attack_telegraphed.emit(global_position)
 	
 func _state_attacking(_delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, normal_speed * speed_multiplier)

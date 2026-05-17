@@ -1,6 +1,7 @@
 extends Node2D
 
 const BACTERIA_SCENE = preload("res://scenes/boss/BacteriaTier1.tscn")
+# TODO: replace with BACTERIA_SCENES array once BacteriaTier2.tscn is created in editor
 
 enum Phase { DEFEND, CLEAN }
 
@@ -18,7 +19,8 @@ var _current_tier: int = 1
 @onready var _player = get_tree().get_first_node_in_group("player")
 
 func _ready() -> void:
-	_start_defend_phase()
+	#_start_defend_phase()
+	pass
 
 func _process(delta: float) -> void:
 	if current_phase == Phase.CLEAN:
@@ -37,7 +39,7 @@ func _start_defend_phase() -> void:
 	_player.set_cleaning_enabled(false)
 	var bacteria := BACTERIA_SCENE.instantiate() as BacteriaTier1
 	bacteria.global_position = bacteria_spawn_position
-	bacteria.apply_tier(_current_tier)
+	bacteria.apply_tier(2)  # TODO: restore _current_tier once BacteriaTier2.tscn exists
 	add_child(bacteria)
 	bacteria.defeated.connect(on_bacteria_defeated)
 
