@@ -2,9 +2,13 @@ extends CharacterBody2D
 
 signal attack_telegraphed(origin: Vector2)
 
+#region Constants
 const CLEAN_PRESSES: int = 10
 const CLEAN_AMOUNT: float = 1.0 / CLEAN_PRESSES
+#endregion
 
+
+#region State Machine
 enum Mode {
 	PHASE1,
 	PHASE2
@@ -16,23 +20,35 @@ enum State {
 	ATTACKING
 }
 
+var current_mode: Mode = Mode.PHASE1
+var _state: State = State.MOVE
+#endregion
+
+
+#region Export Variables
+@export_group("Movement")
 @export var normal_speed = 10.0
 @export var special_speed = 16.0
 @export var jump_power = 10.0
 
 @export_group("Combat")
 @export var punch_damage: int = 25
+#endregion
 
+
+#region Node References
 @onready var animation_player: AnimationPlayer = $AgentAnimator/AnimationPlayer
 @onready var sprite: Sprite2D = $AgentAnimator/Sprite2D
+
 @onready var _clean_zone: Area2D = $CleanZone
 @onready var _clean_indicator: Label = $CleanIndicator
 @onready var _clean_progress_bar: ProgressBar = $CleanProgressBar
+
 @onready var punch_hit: Area2D = $AgentAnimator/punch_hit
+#endregion
 
-var current_mode: Mode = Mode.PHASE1
-var _state: State = State.MOVE
 
+#region Internal State
 var speed_multiplier = 30.0
 var jump_multiplier = -30.0
 var direction = 0
@@ -40,15 +56,19 @@ var direction = 0
 var _nearby_stains: Array = []
 var _target_stain = null
 var _last_clean_key: String = ""
+var punch_hit_start_x: float
+#endregion
 
 
+#region Built-in Functions
 func _ready() -> void:
 	_clean_zone.area_entered.connect(_on_stain_entered)
 	_clean_zone.area_exited.connect(_on_stain_exited)
-	
+
+	punch_hit_start_x = punch_hit.position.x
 	punch_hit.body_entered.connect(_on_punch_hit_body_entered)
 	animation_player.animation_finished.connect(_on_animation_finished)
-	
+
 	_clean_indicator.visible = false
 	_clean_progress_bar.visible = false
 	set_cleaning_enabled(false)
@@ -67,8 +87,10 @@ func _physics_process(delta: float) -> void:
 			_state_attacking(delta)
 
 	move_and_slide()
+#endregion
 
 
+#region State Updates
 func _state_move(delta: float) -> void:
 	handle_mode_switch()
 	handle_jump()
@@ -77,15 +99,14 @@ func _state_move(delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
 		return
-		
+
 	update_animation()
-	
+
 	if not _nearby_stains.is_empty() and Input.is_action_just_pressed("clean"):
 		_start_cleaning()
 
 
 func _state_cleaning(_delta: float) -> void:
-	# Stop the player while cleaning
 	velocity.x = move_toward(velocity.x, 0, normal_speed * speed_multiplier)
 
 	if not Input.is_action_pressed("clean"):
@@ -108,13 +129,18 @@ func _state_cleaning(_delta: float) -> void:
 
 	_clean_progress_bar.value = _target_stain.cleaning_progress
 
-	# Optional cleaning animation
 	if current_mode == Mode.PHASE1:
 		animation_player.play("clean")
 	else:
 		animation_player.play("phase2_clean")
 
 
+func _state_attacking(_delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0, normal_speed * speed_multiplier)
+#endregion
+
+
+#region Movement
 func handle_mode_switch() -> void:
 	if Input.is_action_just_pressed("switch_mode"):
 		if current_mode == Mode.PHASE1:
@@ -124,7 +150,6 @@ func handle_mode_switch() -> void:
 
 
 func handle_jump() -> void:
-	# Player can only jump in PHASE2
 	if current_mode == Mode.PHASE2:
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = jump_power * jump_multiplier
@@ -145,10 +170,14 @@ func handle_horizontal_movement() -> void:
 
 	if direction < 0:
 		sprite.flip_h = true
+		punch_hit.position.x = -abs(punch_hit_start_x)
 	elif direction > 0:
 		sprite.flip_h = false
+		punch_hit.position.x = abs(punch_hit_start_x)
+#endregion
 
 
+#region Animation
 func update_animation() -> void:
 	if current_mode == Mode.PHASE1:
 		if direction != 0:
@@ -166,8 +195,10 @@ func update_animation() -> void:
 			animation_player.play("run")
 		else:
 			animation_player.play("phase2_idle")
+#endregion
 
 
+#region Cleaning
 func _start_cleaning() -> void:
 	_target_stain = _get_closest_stain()
 
@@ -177,23 +208,6 @@ func _start_cleaning() -> void:
 		_clean_progress_bar.value = 0.0
 		_clean_progress_bar.visible = true
 		_state = State.CLEANING
-
-
-func _get_closest_stain() -> Area2D:
-	var closest = null
-	var closest_dist := INF
-
-	for stain in _nearby_stains:
-		if not is_instance_valid(stain):
-			continue
-
-		var d := global_position.distance_to(stain.global_position)
-
-		if d < closest_dist:
-			closest_dist = d
-			closest = stain
-
-	return closest
 
 
 func _cancel_clean() -> void:
@@ -222,17 +236,56 @@ func _finish_clean() -> void:
 func set_cleaning_enabled(enabled: bool) -> void:
 	if not enabled and _state == State.CLEANING:
 		_cancel_clean()
+
 	_nearby_stains.clear()
 	_clean_indicator.visible = false
 	_clean_zone.monitoring = enabled
+
 	if enabled:
 		for area in _clean_zone.get_overlapping_areas():
 			if area.is_in_group("stain"):
 				_nearby_stains.append(area)
+
 		if not _nearby_stains.is_empty():
 			_clean_indicator.visible = true
 
 
+func _get_closest_stain() -> Area2D:
+	var closest = null
+	var closest_dist := INF
+
+	for stain in _nearby_stains:
+		if not is_instance_valid(stain):
+			continue
+
+		var d := global_position.distance_to(stain.global_position)
+
+		if d < closest_dist:
+			closest_dist = d
+			closest = stain
+
+	return closest
+#endregion
+
+
+#region Combat
+func _start_attack() -> void:
+	_state = State.ATTACKING
+	velocity.x = 0
+	animation_player.play("punch")
+	attack_telegraphed.emit(global_position)
+
+
+func _on_punch_hit_body_entered(body: Node2D) -> void:
+	if _state != State.ATTACKING:
+		return
+
+	if body.has_method("take_damage"):
+		body.take_damage(punch_damage)
+#endregion
+
+
+#region Signal Callbacks
 func _on_stain_entered(area: Area2D) -> void:
 	if area.is_in_group("stain"):
 		_nearby_stains.append(area)
@@ -251,22 +304,8 @@ func _on_stain_exited(area: Area2D) -> void:
 		if _nearby_stains.is_empty():
 			_clean_indicator.visible = false
 
-func _start_attack() -> void:
-	_state = State.ATTACKING
-	velocity.x = 0
-	animation_player.play("punch")
-	attack_telegraphed.emit(global_position)
-	
-func _state_attacking(_delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, normal_speed * speed_multiplier)
-	
+
 func _on_animation_finished(anim_name: StringName) -> void:
 	if _state == State.ATTACKING and anim_name == "punch":
 		_state = State.MOVE
-		
-func _on_punch_hit_body_entered(body: Node2D) -> void:
-	if _state != State.ATTACKING:
-		return
-	
-	if body.has_method("take_damage"):
-		body.take_damage(punch_damage)
+#endregion

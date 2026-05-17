@@ -48,9 +48,10 @@ var current_health: int
 #endregion
 
 #region Node References
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: Sprite2D = $AgentAnimator/Sprite2D
 @onready var _debug_label: Label = $DebugLabel
 @onready var _lunge_ray: RayCast2D = $LungeRay
+@onready var animation_player: AnimationPlayer = $AgentAnimator/AnimationPlayer
 #endregion
 
 #region Internal State
@@ -252,6 +253,8 @@ func take_damage(damage: int) -> void:
 	
 	if current_health <= 0:
 		set_state(State.DEAD)
+		return
+	animation_player.play("hit_reaction")
 
 func _on_death() -> void:
 	if is_instance_valid(_player_signal_ref) and _player_signal_ref.has_signal("attack_telegraphed"):

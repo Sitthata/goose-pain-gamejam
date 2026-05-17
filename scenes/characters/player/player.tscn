@@ -146,7 +146,7 @@ tracks/1/path = NodePath("AgentAnimator/punch_hit/CollisionShape2D:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.6, 1),
+"times": PackedFloat32Array(0, 0.8, 1),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [true, false, true]
@@ -233,13 +233,13 @@ region_enabled = true
 region_rect = Rect2(64, 0, 64, 64)
 
 [node name="punch_hit" type="Area2D" parent="AgentAnimator" unique_id=1453383028]
-position = Vector2(-1.1920929e-07, -12.000001)
-scale = Vector2(1.3906251, 1.421875)
-collision_layer = 0
+position = Vector2(24, -12)
+scale = Vector2(1.3906255, 1.421875)
+collision_layer = 4
 collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AgentAnimator/punch_hit" unique_id=1171221441]
-position = Vector2(20.592712, 5.9780207)
+position = Vector2(0, 5.978)
 scale = Vector2(1.0000011, 1)
 shape = SubResource("RectangleShape2D_3xnwo")
 debug_color = Color(0.9173038, 0.1829795, 0.2240468, 0.41960785)

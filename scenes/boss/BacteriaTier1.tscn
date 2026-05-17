@@ -3,9 +3,42 @@
 [ext_resource type="Script" uid="uid://dp3fx18ysg2d6" path="res://scenes/boss/bacteria_tier1.gd" id="1_eiyl8"]
 [ext_resource type="Texture2D" uid="uid://c4oa7iqgbxd6a" path="res://assets/dummy/Dummy2D Sprite Sheet.png" id="1_h2cv8"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_eiyl8"]
-atlas = ExtResource("1_h2cv8")
-region = Rect2(23, 18, 15, 46)
+[sub_resource type="Animation" id="Animation_eiyl8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AgentAnimator/Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 576, 64, 64)]
+}
+
+[sub_resource type="Animation" id="Animation_7t32j"]
+resource_name = "hit_reaction"
+length = 0.96666664
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AgentAnimator/Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.62, 0.9333333),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 576, 64, 64), Rect2(64, 576, 64, 64), Rect2(192, 576, 64, 64), Rect2(0, 576, 64, 64)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1cvth"]
+_data = {
+&"RESET": SubResource("Animation_eiyl8"),
+&"hit_reaction": SubResource("Animation_7t32j")
+}
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7t32j"]
 radius = 6.0
@@ -16,8 +49,18 @@ collision_layer = 8
 script = ExtResource("1_eiyl8")
 spit_speed = 250.0
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=722583175]
-texture = SubResource("AtlasTexture_eiyl8")
+[node name="AgentAnimator" type="Node2D" parent="." unique_id=383148385]
+
+[node name="Sprite2D" type="Sprite2D" parent="AgentAnimator" unique_id=722583175]
+position = Vector2(1, -5)
+scale = Vector2(0.828125, 0.828125)
+texture = ExtResource("1_h2cv8")
+region_enabled = true
+region_rect = Rect2(0, 576, 64, 64)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AgentAnimator" unique_id=1411738367]
+root_node = NodePath("../..")
+libraries/ = SubResource("AnimationLibrary_1cvth")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=472176153]
 shape = SubResource("CapsuleShape2D_7t32j")
