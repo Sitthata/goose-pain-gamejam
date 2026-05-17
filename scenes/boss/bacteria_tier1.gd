@@ -297,8 +297,7 @@ func _try_spawn_trail_stain() -> void:
 
 
 func _get_dodge_chance() -> float:
-	var filth := StainSystem.get_filth_percent() / 100.0
-	return dodge_chance_base + (filth * (1.0 - dodge_chance_base))
+	return dodge_chance_base
 
 
 func _on_attack_telegraphed(origin: Vector2) -> void:
@@ -309,12 +308,17 @@ func _on_attack_telegraphed(origin: Vector2) -> void:
 		set_state(State.DODGE)
 
 
-## Scales exported stats by tier number. Called by boss_stage after instantiation.
-func apply_tier(tier: int) -> void:
-	move_speed       = move_speed * pow(1.2, tier - 1)
-	projectile_rate  = maxf(projectile_rate * pow(0.85, tier - 1), 0.8)
-	death_spit_count = death_spit_count + (tier - 1)
-	if tier >= 2:
-		lunge_enabled = true
-		dodge_chance_base = 0.4
+## Applies a stat config dict from boss_stage. Keys must match exported stat names.
+func apply_stats(s: Dictionary) -> void:
+	lunge_enabled     = s.lunge
+	projectile_rate   = s.spit_cd
+	death_spit_count  = s.death_spits
+	lunge_cooldown    = s.lunge_cd
+	lunge_duration    = s.lunge_dur
+	lunge_stain_count = s.lunge_stains
+	dodge_chance_base = s.dodge
+	print("[Bacteria] tier=%d lunge=%s spit_cd=%.1f death_spits=%d lunge_cd=%.1f lunge_dur=%.1f lunge_stains=%d dodge=%.2f" % [
+		s.get("tier", 0), lunge_enabled, projectile_rate, death_spit_count,
+		lunge_cooldown, lunge_duration, lunge_stain_count, dodge_chance_base
+	])
 #endregion

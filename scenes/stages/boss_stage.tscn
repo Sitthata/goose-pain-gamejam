@@ -3,9 +3,7 @@
 [ext_resource type="Script" uid="uid://cskfisk01w710" path="res://scenes/stages/boss_stage.gd" id="1_gwdgb"]
 [ext_resource type="Texture2D" uid="uid://dxcpknuf8wvn7" path="res://assets/tilemap/main_lev_build.png" id="2_7k5n6"]
 [ext_resource type="Texture2D" uid="uid://dc0055ek1ovup" path="res://assets/tilemap/other_and_decorative.png" id="3_ef5al"]
-[ext_resource type="Script" uid="uid://dc11twtkfxd47" path="res://scenes/systems/spit_spawner/spit_spawner.gd" id="4_7k5n6"]
 [ext_resource type="Script" uid="uid://dchqkwuyie5ks" path="res://scenes/ui/filth_gauge/filth_gauge.gd" id="5_7k5n6"]
-[ext_resource type="PackedScene" uid="uid://rf27h3ugnhyk" path="res://scenes/boss/BacteriaTier1.tscn" id="5_14pys"]
 [ext_resource type="PackedScene" uid="uid://csk5fby83h412" path="res://scenes/characters/player/player.tscn" id="6_ef5al"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y7mc7"]
@@ -2421,13 +2419,5 @@ horizontal_alignment = 1
 position = Vector2(187, 461)
 collision_mask = 1
 
-[node name="BacteriaTier1" parent="." unique_id=1985986814 instance=ExtResource("5_14pys")]
-position = Vector2(340, 472)
-lunge_cooldown = 5.0
-lunge_speed = 300.0
-dodge_speed = 250.0
-dodge_duration = 0.2
-
 [node name="SpitSpawner" type="Node2D" parent="." unique_id=1046391401]
 position = Vector2(337, 330)
-script = ExtResource("4_7k5n6")
