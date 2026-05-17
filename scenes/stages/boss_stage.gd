@@ -30,6 +30,7 @@ var _clean_timer: float = 0.0
 @onready var _player = get_tree().get_first_node_in_group("player")
 
 func _ready() -> void:
+	StainSystem.register_tilemap($TileMapLayer)
 	_start_defend_phase()
 
 func _process(delta: float) -> void:

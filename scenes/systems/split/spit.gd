@@ -13,15 +13,16 @@ func _physics_process(delta: float) -> void:
 	rotation = velocity.angle()
 	var collision := move_and_collide(velocity * delta)
 	if collision:
-		_on_impact(collision.get_position())
+		_on_impact(collision.get_position(), collision.get_normal())
 		queue_free()
 
-func _on_impact(impact_pos: Vector2) -> void:
+func _on_impact(impact_pos: Vector2, surface_normal: Vector2) -> void:
 	var splash := SPLASH_SCENE.instantiate()
 	splash.global_position = impact_pos
 	get_tree().current_scene.add_child(splash)
 
-	if StainSystem.can_spawn_stain(impact_pos):
+	if StainSystem.can_spawn_stain(impact_pos, surface_normal):
 		var stain := STAIN_SCENE.instantiate()
 		stain.global_position = impact_pos
+		stain.rotation = surface_normal.angle() + PI / 2
 		get_tree().current_scene.add_child(stain)
