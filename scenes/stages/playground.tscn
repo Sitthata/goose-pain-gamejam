@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://dt3fpse3rhvay"]
+[gd_scene format=4 uid="uid://c17lkflorsidy"]
 
 [ext_resource type="TileSet" uid="uid://fdprsc4e1dij" path="res://texture/place-holder-tile.tres" id="1_mcsym"]
 [ext_resource type="Script" uid="uid://d4f0hkc45jjkf" path="res://scenes/stages/playground.gd" id="1_ter8k"]
@@ -14,6 +14,7 @@ tile_set = ExtResource("1_mcsym")
 [node name="Player" parent="." unique_id=866851592 instance=ExtResource("2_ter8k")]
 position = Vector2(199, 454)
 collision_mask = 1
+normal_speed = 5.0
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=2092436502 groups=["room_center"]]
 position = Vector2(560, 493)

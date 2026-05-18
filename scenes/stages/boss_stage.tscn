@@ -41,9 +41,9 @@ offset_right = 56.0
 offset_bottom = 36.0
 
 [node name="Player" parent="." unique_id=866851592 instance=ExtResource("6_ef5al")]
-position = Vector2(187, 461)
+position = Vector2(189, 445)
+scale = Vector2(1.5, 1.5)
 collision_mask = 1
-normal_speed = 4.0
 
 [node name="SpitSpawner" type="Node2D" parent="." unique_id=1046391401]
 position = Vector2(94, 359)
