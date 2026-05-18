@@ -27,6 +27,7 @@ StainSystem="*uid://cxkkkg2djk3a1"
 
 stain=""
 player=""
+room_center=""
 
 [input]
 

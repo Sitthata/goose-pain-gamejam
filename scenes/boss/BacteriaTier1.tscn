@@ -44,6 +44,12 @@ _data = {
 radius = 6.0
 height = 42.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_eiyl8"]
+radius = 120.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7t32j"]
+radius = 100.0
+
 [node name="BacteriaTier1" type="CharacterBody2D" unique_id=1985986814]
 collision_layer = 8
 script = ExtResource("1_eiyl8")
@@ -77,3 +83,17 @@ metadata/_edit_use_anchors_ = true
 [node name="LungeRay" type="RayCast2D" parent="." unique_id=358797064]
 target_position = Vector2(69, 0)
 collision_mask = 4
+
+[node name="JumpZone" type="Area2D" parent="." unique_id=964199965]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JumpZone" unique_id=1859956696]
+shape = SubResource("CircleShape2D_eiyl8")
+
+[node name="DodgeZone" type="Area2D" parent="." unique_id=562859665]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DodgeZone" unique_id=839704969]
+shape = SubResource("CircleShape2D_7t32j")
