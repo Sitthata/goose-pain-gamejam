@@ -3,9 +3,9 @@ extends CharacterBody2D
 signal attack_telegraphed(origin: Vector2)
 
 ## Player controller.
-## Handles movement, mode switching, cleaning, and automatic attack moveset.
-## Attack button starts the full attack sequence:
-## dash + attack1 -> dash + attack2 -> dash + attack3 -> cooldown.
+## Handles movement, mode switching, cleaning, skill1 attack sequence, and skill2 drop spin.
+## skill1: dash + attack1 -> dash + attack2 -> dash + attack3 -> cooldown.
+## skill2: drop_spin -> cooldown.
 
 #region Constants
 const CLEAN_PRESSES: int = 10
@@ -22,7 +22,9 @@ enum Mode {
 enum State {
 	MOVE,
 	CLEANING,
-	ATTACKING
+	ATTACKING,
+	SKILL2_ATTACKING,
+	SKILL3_ATTACKING
 }
 
 var current_mode: Mode = Mode.PHASE1
@@ -40,15 +42,27 @@ var previous_state: State = State.MOVE
 @export var speed_multiplier: float = 30.0
 @export var jump_multiplier: float = -30.0
 
-@export_group("Combat")
+@export_group("Skill 1")
 @export var attack1_damage: int = 20
 @export var attack2_damage: int = 25
 @export var attack3_damage: int = 35
-
 @export var attack_cooldown: float = 1.0
 @export var attack_dash_speed: float = 500.0
 @export var attack_dash_duration: float = 0.12
 @export var attack_slide_friction: float = 2000.0
+
+@export_group("Skill 2")
+@export var skill2_damage: int = 45
+@export var skill2_cooldown: float = 3.0
+@export var skill2_slide_friction: float = 1800.0
+
+@export_group("Skill 3")
+@export var skill3_damage: int = 60
+@export var skill3_cooldown: float = 5.0
+@export var skill3_dash_distance: float = 300.0
+@export var skill3_dash_duration: float = 0.18
+@export var skill3_startup_time: float = 0.8
+@export var skill3_slide_friction: float = 2200.0
 #endregion
 
 
@@ -76,10 +90,21 @@ var _nearby_stains: Array = []
 var _target_stain = null
 var _last_clean_key: String = ""
 
-# Attack sequence
+# Skill 1 attack sequence
 var _attack_step: int = 0
 var _attack_cooldown_timer: float = 0.0
 var _attack_dash_timer: float = 0.0
+
+# Skill 2
+var _skill2_cooldown_timer: float = 0.0
+
+# Skill 3
+var _skill3_cooldown_timer: float = 0.0
+var _skill3_startup_timer: float = 0.0
+var _skill3_dash_timer: float = 0.0
+var _skill3_has_dashed: bool = false
+
+# Shared combat
 var _attack_has_hit: bool = false
 var _current_attack_damage: int = 0
 #endregion
@@ -102,7 +127,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
-	_update_attack_cooldown(delta)
+	_update_cooldowns(delta)
 
 	match state:
 		State.MOVE:
@@ -111,7 +136,11 @@ func _physics_process(delta: float) -> void:
 			_update_cleaning()
 		State.ATTACKING:
 			_update_attacking(delta)
-
+		State.SKILL2_ATTACKING:
+			_update_skill2_attacking(delta)
+		State.SKILL3_ATTACKING:
+			_update_skill3_attacking(delta)
+	
 	move_and_slide()
 #endregion
 
@@ -140,6 +169,11 @@ func _enter_state(new_state: State) -> void:
 		State.ATTACKING:
 			_enter_attacking_state()
 
+		State.SKILL2_ATTACKING:
+			_enter_skill2_attacking_state()
+
+		State.SKILL3_ATTACKING:
+			_enter_skill3_attacking_state()
 
 func _exit_state(old_state: State) -> void:
 	match old_state:
@@ -147,6 +181,9 @@ func _exit_state(old_state: State) -> void:
 			pass
 
 		State.ATTACKING:
+			pass
+
+		State.SKILL2_ATTACKING:
 			pass
 #endregion
 
@@ -157,15 +194,23 @@ func _update_move() -> void:
 	_handle_jump()
 	_handle_horizontal_movement()
 
-	if Input.is_action_just_pressed("attack") and _attack_cooldown_timer <= 0.0:
+	if Input.is_action_just_pressed("skill1") and _attack_cooldown_timer <= 0.0:
 		_attack_step = 0
 		set_state(State.ATTACKING)
+		return
+
+	if Input.is_action_just_pressed("skill2") and _skill2_cooldown_timer <= 0.0:
+		set_state(State.SKILL2_ATTACKING)
 		return
 
 	if not _nearby_stains.is_empty() and Input.is_action_just_pressed("clean"):
 		set_state(State.CLEANING)
 		return
 
+	if Input.is_action_just_pressed("skill3") and _skill3_cooldown_timer <= 0.0:
+		set_state(State.SKILL3_ATTACKING)
+		return
+	
 	_update_movement_animation()
 
 
@@ -180,8 +225,8 @@ func _update_cleaning() -> void:
 		_finish_cleaning()
 		return
 
-	_process_cleaning_input()
-	_update_cleaning_animation()
+	var cleaning_animation := _process_cleaning_input()
+	_update_cleaning_animation(cleaning_animation)
 
 
 func _update_attacking(delta: float) -> void:
@@ -193,6 +238,40 @@ func _update_attacking(delta: float) -> void:
 			velocity.x,
 			0.0,
 			attack_slide_friction * delta
+		)
+
+
+func _update_skill2_attacking(delta: float) -> void:
+	velocity.x = move_toward(
+		velocity.x,
+		0.0,
+		skill2_slide_friction * delta
+	)
+
+func _update_skill3_attacking(delta: float) -> void:
+	if _skill3_startup_timer > 0.0:
+		_skill3_startup_timer -= delta
+		velocity.x = move_toward(
+			velocity.x,
+			0.0,
+			skill3_slide_friction * delta
+		)
+		return
+
+	if not _skill3_has_dashed:
+		_skill3_has_dashed = true
+		_skill3_dash_timer = skill3_dash_duration
+
+	if _skill3_dash_timer > 0.0:
+		_skill3_dash_timer -= delta
+
+		var dash_speed := skill3_dash_distance / skill3_dash_duration
+		velocity.x = facing_direction * dash_speed
+	else:
+		velocity.x = move_toward(
+			velocity.x,
+			0.0,
+			skill3_slide_friction * delta
 		)
 #endregion
 
@@ -270,11 +349,18 @@ func _update_movement_animation() -> void:
 		animation_player.play("phase2_idle")
 
 
-func _update_cleaning_animation() -> void:
-	if current_mode == Mode.PHASE1:
-		animation_player.play("clean")
-	else:
-		animation_player.play("phase2_clean")
+func _update_cleaning_animation(cleaning_animation: String = "") -> void:
+	if cleaning_animation != "":
+		animation_player.play(cleaning_animation)
+		return
+
+	if animation_player.current_animation == "clean_left" and animation_player.is_playing():
+		return
+
+	if animation_player.current_animation == "clean_right" and animation_player.is_playing():
+		return
+
+	animation_player.play("clean_idle")
 
 
 func _get_attack_animation_name() -> String:
@@ -304,19 +390,24 @@ func _enter_cleaning_state() -> void:
 	_clean_progress_bar.visible = true
 
 
-func _process_cleaning_input() -> void:
+func _process_cleaning_input() -> String:
 	var pressed_left := Input.is_action_just_pressed("move_left")
 	var pressed_right := Input.is_action_just_pressed("move_right")
 
 	if pressed_left and _last_clean_key != "left":
 		_last_clean_key = "left"
 		_target_stain.advance_clean(CLEAN_AMOUNT)
+		_clean_progress_bar.value = _target_stain.cleaning_progress
+		return "clean_left"
 
 	elif pressed_right and _last_clean_key != "right":
 		_last_clean_key = "right"
 		_target_stain.advance_clean(CLEAN_AMOUNT)
+		_clean_progress_bar.value = _target_stain.cleaning_progress
+		return "clean_right"
 
 	_clean_progress_bar.value = _target_stain.cleaning_progress
+	return ""
 
 
 func _cancel_cleaning() -> void:
@@ -397,6 +488,19 @@ func _start_attack_step() -> void:
 	attack_telegraphed.emit(global_position)
 
 
+func _enter_skill2_attacking_state() -> void:
+	_attack_has_hit = false
+	_current_attack_damage = skill2_damage
+	velocity.x = 0.0
+
+	animation_player.play("drop_spin")
+
+	if is_instance_valid(punch_sound):
+		punch_sound.play()
+
+	attack_telegraphed.emit(global_position)
+
+
 func _set_current_attack_damage() -> void:
 	match _attack_step:
 		0:
@@ -410,7 +514,7 @@ func _set_current_attack_damage() -> void:
 
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
-	if state != State.ATTACKING:
+	if state != State.ATTACKING and state != State.SKILL2_ATTACKING and state != State.SKILL3_ATTACKING:
 		return
 
 	if _attack_has_hit:
@@ -443,9 +547,45 @@ func _end_attack_sequence() -> void:
 	set_state(State.MOVE)
 
 
-func _update_attack_cooldown(delta: float) -> void:
+func _end_skill2_attack() -> void:
+	_skill2_cooldown_timer = skill2_cooldown
+	set_state(State.MOVE)
+
+
+func _update_cooldowns(delta: float) -> void:
 	if _attack_cooldown_timer > 0.0:
 		_attack_cooldown_timer = maxf(_attack_cooldown_timer - delta, 0.0)
+
+	if _skill2_cooldown_timer > 0.0:
+		_skill2_cooldown_timer = maxf(_skill2_cooldown_timer - delta, 0.0)
+		
+	if _skill3_cooldown_timer > 0.0:
+		_skill3_cooldown_timer = maxf(_skill3_cooldown_timer - delta, 0.0)
+
+func _enter_skill3_attacking_state() -> void:
+	_attack_has_hit = false
+	_current_attack_damage = skill3_damage
+
+	_skill3_startup_timer = skill3_startup_time
+	_skill3_dash_timer = 0.0
+	_skill3_has_dashed = false
+
+	velocity.x = 0.0
+
+	animation_player.play("blink_attack")
+
+	if is_instance_valid(punch_sound):
+		punch_sound.play()
+
+	attack_telegraphed.emit(global_position)
+
+
+func _end_skill3_attack() -> void:
+	_skill3_startup_timer = 0.0
+	_skill3_dash_timer = 0.0
+	_skill3_has_dashed = false
+	_skill3_cooldown_timer = skill3_cooldown
+	set_state(State.MOVE)
 #endregion
 
 
@@ -475,11 +615,23 @@ func _on_stain_exited(area: Area2D) -> void:
 
 
 func _on_animation_finished(anim_name: StringName) -> void:
-	if state != State.ATTACKING:
+	if state == State.ATTACKING:
+		if anim_name != "attack1" and anim_name != "attack2" and anim_name != "attack3":
+			return
+
+		_go_to_next_attack_step()
 		return
 
-	if anim_name != "attack1" and anim_name != "attack2" and anim_name != "attack3":
+	if state == State.SKILL2_ATTACKING:
+		if anim_name != "drop_spin":
+			return
+
+		_end_skill2_attack()
 		return
 
-	_go_to_next_attack_step()
+	if state == State.SKILL3_ATTACKING:
+		if anim_name != "blink_attack":
+			return
+
+		_end_skill3_attack()
 #endregion

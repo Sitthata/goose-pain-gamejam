@@ -44,6 +44,12 @@ offset_bottom = 36.0
 position = Vector2(189, 445)
 scale = Vector2(1.5, 1.5)
 collision_mask = 1
+normal_speed = 4.0
+skill2_damage = 50
+skill3_damage = 30
+skill3_dash_distance = 150.0
+skill3_dash_duration = 0.1
+skill3_startup_time = 0.7
 
 [node name="SpitSpawner" type="Node2D" parent="." unique_id=1046391401]
 position = Vector2(94, 359)
