@@ -17,3 +17,6 @@ collision_mask = 1
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=2092436502 groups=["room_center"]]
 position = Vector2(560, 493)
+
+[node name="BacteriaSpawnPosition" type="Marker2D" parent="." unique_id=1419131719]
+position = Vector2(534, 475)

@@ -12,7 +12,7 @@ extends Node2D
 
 const BACTERIA_SCENE = preload("res://scenes/boss/BacteriaTier1.tscn")
 
-@export var bacteria_spawn_position: Vector2 = Vector2(521, 464)
+@onready var bacteria_spawn_position: Marker2D = $BacteriaSpawnPosition
 
 @onready var _tilemap: TileMapLayer = $TileMapLayer
 
@@ -29,7 +29,6 @@ func _ready() -> void:
 	# Free any pre-placed BacteriaTier1 from the scene — capture its position first
 	var existing := get_node_or_null("BacteriaTier1") as BacteriaTier1
 	if is_instance_valid(existing):
-		bacteria_spawn_position = existing.position
 		existing.queue_free()
 
 	_spawn_bacteria(1)
@@ -76,7 +75,7 @@ func _spawn_bacteria(tier: int) -> void:
 	var stats := BacteriaStats.for_filth(filth_midpoint)
 
 	_bacteria = BACTERIA_SCENE.instantiate() as BacteriaTier1
-	_bacteria.position = bacteria_spawn_position
+	_bacteria.global_position = bacteria_spawn_position.position
 	add_child(_bacteria)
 	_bacteria.apply_stats(stats)
 	_bacteria.defeated.connect(_on_bacteria_defeated)

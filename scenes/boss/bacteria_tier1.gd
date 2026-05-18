@@ -101,6 +101,7 @@ var _player_in_jump_zone: bool = false
 
 # Ground Slam
 var _slam_left_floor: bool = false
+var _wall_escape_timer: float = 0.0
 
 var _invincible: bool = false
 var _knockback_timer: float = 0.0
@@ -136,12 +137,13 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 
-	_attack_cooldown  = maxf(_attack_cooldown  - delta, 0.0)
-	_attack_pause     = maxf(_attack_pause     - delta, 0.0)
-	_lunge_timer      = maxf(_lunge_timer      - delta, 0.0)
-	_jump_timer       = maxf(_jump_timer       - delta, 0.0)
-	_slam_timer       = maxf(_slam_timer       - delta, 0.0)
-	_knockback_timer  = maxf(_knockback_timer  - delta, 0.0)
+	_attack_cooldown    = maxf(_attack_cooldown    - delta, 0.0)
+	_attack_pause       = maxf(_attack_pause       - delta, 0.0)
+	_lunge_timer        = maxf(_lunge_timer        - delta, 0.0)
+	_jump_timer         = maxf(_jump_timer         - delta, 0.0)
+	_slam_timer         = maxf(_slam_timer         - delta, 0.0)
+	_knockback_timer    = maxf(_knockback_timer    - delta, 0.0)
+	_wall_escape_timer  = maxf(_wall_escape_timer  - delta, 0.0)
 
 	velocity.y += get_gravity().y * delta
 
@@ -267,6 +269,16 @@ func _update_idle() -> void:
 
 
 func _update_roam() -> void:
+	# Wall escape — commit to moving toward room center for a short duration
+	# so the stain logic can't immediately reverse direction and cause oscillation
+	if is_on_wall():
+		_wall_escape_timer = 0.4
+	if _wall_escape_timer > 0.0:
+		var escape_dir := signf(_room_center_x - global_position.x)
+		velocity.x = escape_dir * move_speed
+		sprite.flip_h = escape_dir < 0.0
+		return
+
 	# Count stains on each side of the room to find the cleaner side
 	var left_count := 0
 	var right_count := 0
@@ -496,7 +508,7 @@ func _get_dodge_chance() -> float:
 
 
 func _on_attack_telegraphed(origin: Vector2) -> void:
-	if state in [State.DEAD, State.DODGE, State.LUNGE]:
+	if state in [State.DEAD, State.DODGE, State.LUNGE, State.JUMP, State.GROUND_SLAM]:
 		return
 	if not _player_in_dodge_zone:
 		return
@@ -533,6 +545,7 @@ func apply_stats(s: BacteriaStats) -> void:
 	lunge_stain_count = s.lunge_stains
 	dodge_chance_base = s.dodge
 	jump_enabled      = s.jump_enabled
+	jump_cooldown     = s.jump_cd
 	slam_enabled      = s.slam_enabled
 	slam_cooldown     = s.slam_cd
 	print("[Bacteria] tier=%d lunge=%s jump=%s slam=%s spit_cd=%.1f dodge=%.2f slam_cd=%.1f" % [
