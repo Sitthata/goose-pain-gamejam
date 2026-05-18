@@ -1,6 +1,6 @@
 extends Node
 
-const MAX_STAINS: int = 40
+const MAX_STAINS: int = 33
 const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 
 var active_stains: Array = []
@@ -19,7 +19,7 @@ func can_spawn_stain(spawn_position: Vector2, surface_normal: Vector2 = Vector2.
 	if not _is_stainable_at(sample_pos):
 		return false
 	for stain in active_stains:
-		if stain.global_position.distance_to(spawn_position) < stain_radius * 1.3:
+		if stain.global_position.distance_to(spawn_position) < stain_radius * 1.0:
 			return false
 	return true
 
