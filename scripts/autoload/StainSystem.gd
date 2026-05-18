@@ -1,6 +1,6 @@
 extends Node
 
-const MAX_STAINS: int = 20
+const MAX_STAINS: int = 40
 const STAIN_SCENE = preload("res://scenes/systems/stain/stain.tscn")
 
 var active_stains: Array = []

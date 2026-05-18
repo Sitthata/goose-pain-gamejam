@@ -29,6 +29,7 @@ var previous_state: State = State.IDLE
 var current_health: int
 
 @export_group("Combat")
+@export var knockback_force: float = 300.0
 @export var projectile_rate: float = 3.0   # seconds between shots
 @export var spit_speed: float = 200.0
 @export var death_spit_count: int = 2
@@ -101,6 +102,9 @@ var _player_in_jump_zone: bool = false
 # Ground Slam
 var _slam_left_floor: bool = false
 
+var _invincible: bool = false
+var _knockback_timer: float = 0.0
+var _knockback_vx: float = 0.0
 var _player_signal_ref: Node2D = null
 #endregion
 
@@ -132,11 +136,12 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 
-	_attack_cooldown = maxf(_attack_cooldown - delta, 0.0)
-	_attack_pause    = maxf(_attack_pause    - delta, 0.0)
-	_lunge_timer     = maxf(_lunge_timer     - delta, 0.0)
-	_jump_timer      = maxf(_jump_timer      - delta, 0.0)
-	_slam_timer      = maxf(_slam_timer      - delta, 0.0)
+	_attack_cooldown  = maxf(_attack_cooldown  - delta, 0.0)
+	_attack_pause     = maxf(_attack_pause     - delta, 0.0)
+	_lunge_timer      = maxf(_lunge_timer      - delta, 0.0)
+	_jump_timer       = maxf(_jump_timer       - delta, 0.0)
+	_slam_timer       = maxf(_slam_timer       - delta, 0.0)
+	_knockback_timer  = maxf(_knockback_timer  - delta, 0.0)
 
 	velocity.y += get_gravity().y * delta
 
@@ -157,6 +162,10 @@ func _physics_process(delta: float) -> void:
 			_update_jump()
 		State.GROUND_SLAM:
 			_update_ground_slam()
+
+	# Knockback overrides state velocity after the state update runs
+	if _knockback_timer > 0.0:
+		velocity.x = _knockback_vx
 
 	move_and_slide()
 
@@ -371,15 +380,35 @@ func _on_slam_land() -> void:
 		spit.launch(Vector2(cos(angle), sin(angle)), spit_speed)
 
 
-func take_damage(damage: int) -> void:
-	if state == State.DEAD:
+func take_damage(damage: int, hit_origin: Vector2) -> void:
+	if state == State.DEAD or _invincible:
 		return
 	current_health -= damage
-	print("Bacteria HP: ", current_health)
+	_flash_white()
+	_apply_knockback(hit_origin)
+	_start_iframes()
 	if current_health <= 0:
 		set_state(State.DEAD)
 		return
 	animation_player.play("hit_reaction")
+
+
+func _flash_white() -> void:
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color(4.0, 4.0, 4.0, 1.0), 0.05)
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+
+
+func _apply_knockback(hit_origin: Vector2) -> void:
+	_knockback_vx    = signf(global_position.x - hit_origin.x) * knockback_force
+	_knockback_timer = 0.15
+
+
+func _start_iframes() -> void:
+	_invincible = true
+	await get_tree().create_timer(0.25).timeout
+	if is_instance_valid(self):
+		_invincible = false
 
 
 func _on_death() -> void:
@@ -494,6 +523,8 @@ func _on_dodge_zone_body_exited(body: Node2D) -> void:
 
 
 func apply_stats(s: BacteriaStats) -> void:
+	max_health        = s.max_health
+	current_health    = max_health
 	lunge_enabled     = s.lunge
 	projectile_rate   = s.spit_cd
 	death_spit_count  = s.death_spits

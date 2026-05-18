@@ -286,7 +286,7 @@ func _on_punch_hit_body_entered(body: Node2D) -> void:
 		return
 
 	if body.has_method("take_damage"):
-		body.take_damage(punch_damage)
+		body.take_damage(punch_damage, global_position)
 		impact_sound.play()
 		
 		#var impact_position := global_position.lerp(body.global_position, 0.6)
