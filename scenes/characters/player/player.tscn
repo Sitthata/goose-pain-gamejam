@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://0tohlbujiuo4" path="res://scenes/characters/player/player.gd" id="1_plhy4"]
 [ext_resource type="Texture2D" uid="uid://c4oa7iqgbxd6a" path="res://assets/dummy/Dummy2D Sprite Sheet.png" id="2_t61fv"]
+[ext_resource type="AudioStream" uid="uid://c4s6ov6kpd6lb" path="res://assets/effect/sounds/punchwhoosh.wav" id="3_686vu"]
+[ext_resource type="AudioStream" uid="uid://bb3xa8qp067g8" path="res://assets/effect/sounds/testpunchimpact.wav" id="4_hss88"]
 
 [sub_resource type="Animation" id="Animation_686vu"]
 length = 0.001
@@ -201,7 +203,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3xnwo"]
-size = Vector2(23.533684, 21.802198)
+size = Vector2(23.533684, 13.362616)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_oq6u7"]
 radius = 8.0
@@ -214,6 +216,7 @@ radius = 30.870699
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_plhy4")
+jump_power = 15.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=633238545]
 zoom = Vector2(2.5, 2.5)
@@ -239,8 +242,8 @@ collision_layer = 4
 collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AgentAnimator/punch_hit" unique_id=1171221441]
-position = Vector2(0, 5.978)
-scale = Vector2(1.0000011, 1)
+position = Vector2(0, 2.10989)
+scale = Vector2(1.0000011, 0.99999994)
 shape = SubResource("RectangleShape2D_3xnwo")
 debug_color = Color(0.9173038, 0.1829795, 0.2240468, 0.41960785)
 
@@ -274,3 +277,14 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CleanZone" unique_id=1328559240]
 position = Vector2(-3, 0)
 shape = SubResource("CircleShape2D_uar8r")
+
+[node name="sfx" type="Node2D" parent="." unique_id=1038078507]
+
+[node name="punch_sound" type="AudioStreamPlayer" parent="sfx" unique_id=1851156361]
+stream = ExtResource("3_686vu")
+bus = &"Sounds"
+
+[node name="Impact_sound" type="AudioStreamPlayer" parent="sfx" unique_id=1129584599]
+stream = ExtResource("4_hss88")
+volume_db = -10.0
+bus = &"Sounds"

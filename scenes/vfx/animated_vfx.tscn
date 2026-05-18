@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://bc15wj8j5i8a3"]
+
+[ext_resource type="Script" uid="uid://nx46y87ems58" path="res://scenes/vfx/animated_vfx.gd" id="1_w0pgd"]
+[ext_resource type="Texture2D" uid="uid://cr50aewu31lm5" path="res://assets/effect/attack vfx/Fire-bomb.png" id="2_w0pgd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o4g25"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4spx6"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ycs24"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c631y"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2h2d"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2k64a"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ajhn2"]
+atlas = ExtResource("2_w0pgd")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_72uxn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o4g25")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4spx6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ycs24")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c631y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j2h2d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2k64a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ajhn2")
+}],
+"loop": false,
+"name": &"punch_impact_vfx",
+"speed": 10.0
+}]
+
+[node name="animated_vfx" type="Node2D" unique_id=1211609366]
+script = ExtResource("1_w0pgd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1645664081]
+position = Vector2(0, -4)
+sprite_frames = SubResource("SpriteFrames_72uxn")
+animation = &"punch_impact_vfx"
+frame = 6
+frame_progress = 1.0

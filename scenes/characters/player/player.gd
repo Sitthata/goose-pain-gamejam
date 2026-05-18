@@ -5,6 +5,7 @@ signal attack_telegraphed(origin: Vector2)
 #region Constants
 const CLEAN_PRESSES: int = 10
 const CLEAN_AMOUNT: float = 1.0 / CLEAN_PRESSES
+const ANIMATED_VFX = preload("res://scenes/vfx/animated_vfx.tscn")
 #endregion
 
 
@@ -43,6 +44,9 @@ var _state: State = State.MOVE
 @onready var _clean_zone: Area2D = $CleanZone
 @onready var _clean_indicator: Label = $CleanIndicator
 @onready var _clean_progress_bar: ProgressBar = $CleanProgressBar
+
+@onready var punch_sound: AudioStreamPlayer = $sfx/punch_sound
+@onready var impact_sound: AudioStreamPlayer = $sfx/Impact_sound
 
 @onready var punch_hit: Area2D = $AgentAnimator/punch_hit
 #endregion
@@ -273,6 +277,7 @@ func _start_attack() -> void:
 	_state = State.ATTACKING
 	velocity.x = 0
 	animation_player.play("punch")
+	punch_sound.play()
 	attack_telegraphed.emit(global_position)
 
 
@@ -282,8 +287,21 @@ func _on_punch_hit_body_entered(body: Node2D) -> void:
 
 	if body.has_method("take_damage"):
 		body.take_damage(punch_damage)
+		impact_sound.play()
+		
+		#var impact_position := global_position.lerp(body.global_position, 0.6)
+		#var should_flip := body.global_position.x < global_position.x
+
+		#_spawn_vfx("punch_impact_vfx", impact_position, should_flip)
 #endregion
 
+#region VFX
+func _spawn_vfx(vfx_name: String, spawn_position: Vector2, flip: bool = false) -> void:
+	var vfx := ANIMATED_VFX.instantiate()
+	get_tree().current_scene.add_child(vfx)
+	vfx.global_position = spawn_position
+	vfx.setup(vfx_name, flip)
+#endregion
 
 #region Signal Callbacks
 func _on_stain_entered(area: Area2D) -> void:
